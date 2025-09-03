@@ -79,7 +79,7 @@ class CRMSystem {
     
     showPage(pageName) {
         // Hide all pages
-        document.querySelectorAll('.crm-page').forEach(page => {
+        document.querySelectorAll('.content-section').forEach(page => {
             page.classList.remove('active');
         });
         

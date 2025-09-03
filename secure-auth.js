@@ -2,7 +2,7 @@ class SecureAuth {
     constructor() {
         this.validCredentials = {
             username: 'admin',
-            passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
+            passwordHash: '39e3b2d41944a187dccb942f8929c17f039aa973c91fe5783fb3ebace5f4625d'
         };
         
         this.loginAttempts = 0;
