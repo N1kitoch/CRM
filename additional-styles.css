@@ -1,0 +1,544 @@
+/* Additional Styles for CRM System */
+
+/* Enhanced Button Styles */
+.btn-accent {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: #7c3aed;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+}
+
+/* Enhanced Table Styles */
+.orders-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.orders-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.orders-table tbody tr:nth-child(even):hover {
+    background-color: #f3f4f6;
+}
+
+/* Enhanced Status Badges */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+
+/* Enhanced Card Shadows */
+.stat-card,
+.orders-table-container,
+.messages-list,
+.support-list,
+.chat-sidebar,
+.chat-main,
+.reviews-overview,
+.reviews-list {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
+}
+
+.stat-card:hover,
+.orders-table-container:hover,
+.messages-list:hover,
+.support-list:hover,
+.chat-sidebar:hover,
+.chat-main:hover,
+.reviews-overview:hover,
+.reviews-list:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Enhanced Navigation */
+.nav-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-item:hover::after {
+    width: 100%;
+}
+
+.nav-item.active::after {
+    width: 100%;
+}
+
+/* Enhanced Form Elements */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+}
+
+/* Enhanced Modal */
+.modal-content {
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Loading Spinner */
+.loading-spinner {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Enhanced Activity Items */
+.activity-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background-color: #3b82f6;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.activity-item:hover::before {
+    transform: scaleY(1);
+}
+
+/* Enhanced Message Items */
+.message-item,
+.support-item {
+    position: relative;
+}
+
+.message-item::before,
+.support-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background-color: #3b82f6;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.message-item:hover::before,
+.support-item:hover::before {
+    transform: scaleY(1);
+}
+
+.message-item.active::before,
+.support-item.active::before {
+    transform: scaleY(1);
+}
+
+/* Enhanced Chat Messages */
+.chat-message {
+    animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message.user {
+    animation-delay: 0.1s;
+}
+
+.chat-message.admin {
+    animation-delay: 0.2s;
+}
+
+/* Enhanced Review Items */
+.review-item {
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.review-item:hover {
+    transform: translateY(-2px);
+}
+
+.review-rating i {
+    transition: transform 0.2s ease;
+}
+
+.review-rating i:hover {
+    transform: scale(1.2);
+}
+
+/* Enhanced Filters */
+.filters-bar {
+    position: relative;
+    overflow: hidden;
+}
+
+.filters-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    animation: filterBarSlide 3s infinite;
+}
+
+@keyframes filterBarSlide {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Enhanced Header */
+.crm-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.crm-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+}
+
+/* Enhanced Login Form */
+.login-form {
+    position: relative;
+}
+
+.login-form::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0.1;
+    animation: loginFormGlow 4s ease-in-out infinite;
+}
+
+@keyframes loginFormGlow {
+    0%, 100% {
+        opacity: 0.1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+}
+
+/* Enhanced Stats Cards */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    transition: transform 0.6s ease;
+}
+
+.stat-card:hover::before {
+    transform: rotate(45deg) scale(1.2);
+}
+
+/* Enhanced Table Headers */
+.orders-table th {
+    position: relative;
+    overflow: hidden;
+}
+
+.orders-table th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.orders-table th:hover::after {
+    transform: scaleX(1);
+}
+
+/* Enhanced Modal Buttons */
+.modal-footer .btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-footer .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.modal-footer .btn:hover::before {
+    left: 100%;
+}
+
+/* Enhanced Chat Input */
+.chat-input textarea {
+    transition: all 0.3s ease;
+}
+
+.chat-input textarea:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px rgba(59, 130, 246, 0.3);
+}
+
+/* Enhanced Navigation Items */
+.nav-item {
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: #f8fafc;
+    border-radius: 8px 8px 0 0;
+}
+
+.nav-item.active {
+    background-color: #eff6ff;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Enhanced Status Badges with Icons */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.7;
+}
+
+/* Enhanced Loading States */
+.loading-overlay {
+    backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .activity-status {
+        align-items: flex-start;
+    }
+    
+    .chat-message {
+        max-width: 90%;
+    }
+    
+    .modal-content {
+        margin: 20% auto;
+        width: 95%;
+    }
+}
+
+/* Enhanced Accessibility */
+.btn:focus,
+.nav-item:focus,
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Enhanced Dark Mode Support (Future) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here */
+}
+
+/* Enhanced Print Styles */
+@media print {
+    .crm-nav,
+    .filters-bar,
+    .btn,
+    .modal,
+    .loading-overlay {
+        display: none !important;
+    }
+    
+    .crm-main {
+        padding: 0;
+    }
+    
+    .orders-table,
+    .messages-list,
+    .support-list,
+    .reviews-list {
+        border: 1px solid #000;
+    }
+}
+
+/* Enhanced Animations for Performance */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Enhanced Focus Indicators */
+.btn:focus-visible,
+.nav-item:focus-visible,
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Enhanced Hover Effects */
+@media (hover: hover) {
+    .btn:hover,
+    .nav-item:hover,
+    .message-item:hover,
+    .support-item:hover,
+    .chat-order-item:hover,
+    .review-item:hover {
+        transform: translateY(-2px);
+    }
+}
+
+@media (hover: none) {
+    .btn:active,
+    .nav-item:active,
+    .message-item:active,
+    .support-item:active,
+    .chat-order-item:active,
+    .review-item:active {
+        transform: translateY(-1px);
+    }
+}
+
+

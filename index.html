@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Система - Управление заказами и клиентами</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="additional-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h1>CRM Система</h1>
+                    <p>Войдите в систему для управления заказами и клиентами</p>
+                </div>
+                
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i>
+                            Имя пользователя
+                        </label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Пароль
+                        </label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Войти
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p>Доступ только для администраторов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main CRM Dashboard -->
+    <div id="crmDashboard" class="page">
+        <!-- Header -->
+        <header class="crm-header">
+            <div class="header-left">
+                <h1><i class="fas fa-chart-line"></i> CRM Система</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="currentUser">Администратор</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Выйти
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="crm-nav">
+            <button class="nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Дашборд</span>
+            </button>
+            <button class="nav-item" data-page="orders">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Заказы</span>
+            </button>
+            <button class="nav-item" data-page="messages">
+                <i class="fas fa-comments"></i>
+                <span>Сообщения</span>
+            </button>
+            <button class="nav-item" data-page="chat">
+                <i class="fas fa-comment-dots"></i>
+                <span>Чат с клиентами</span>
+            </button>
+            <button class="nav-item" data-page="support">
+                <i class="fas fa-headset"></i>
+                <span>Поддержка</span>
+            </button>
+            <button class="nav-item" data-page="reviews">
+                <i class="fas fa-star"></i>
+                <span>Отзывы</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="crm-main">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="crm-page active">
+                <div class="page-header">
+                    <h2>Дашборд</h2>
+                    <p>Обзор активности и статистики</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Всего заказов</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="pendingOrders">0</h3>
+                            <p>Ожидают обработки</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="unreadMessages">0</h3>
+                            <p>Непрочитанные</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="averageRating">0.0</h3>
+                            <p>Средний рейтинг</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Последняя активность</h3>
+                    <div id="recentActivityList" class="activity-list">
+                        <!-- Activity items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div id="ordersPage" class="crm-page">
+                <div class="page-header">
+                    <h2>Управление заказами</h2>
+                    <p>Просмотр и изменение статусов заказов</p>
+                </div>
+                
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label for="statusFilter">Статус:</label>
+                        <select id="statusFilter">
+                            <option value="">Все статусы</option>
+                            <option value="pending">Ожидает</option>
+                            <option value="processing">В обработке</option>
+                            <option value="completed">Завершен</option>
+                            <option value="cancelled">Отменен</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="dateFilter">Дата:</label>
+                        <select id="dateFilter">
+                            <option value="">Все даты</option>
+                            <option value="today">Сегодня</option>
+                            <option value="week">За неделю</option>
+                            <option value="month">За месяц</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt"></i>
+                        Обновить
+                    </button>
+                </div>
+                
+                <div class="orders-table-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Клиент</th>
+                                <th>Услуга</th>
+                                <th>Сообщение</th>
+                                <th>Статус</th>
+                                <th>Дата</th>
+                                <th>Комментарий</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Messages Page -->
+            <div id="messagesPage" class="crm-page">
+                <div class="page-header">
+                    <h2>Сообщения от клиентов</h2>
+                    <p>Обработка обратной связи и запросов</p>
+                </div>
+                
+                <div class="messages-container">
+                    <div class="messages-list" id="messagesList">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                    
+                    <div class="message-detail" id="messageDetail">
+                        <div class="message-detail-placeholder">
+                            <i class="fas fa-comment"></i>
+                            <p>Выберите сообщение для просмотра</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Page -->
+            <div id="chatPage" class="crm-page">
+                <div class="page-header">
+                    <h2>Чат с клиентами</h2>
+                    <p>Ответы на сообщения от лица администратора</p>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="chat-orders" id="chatOrders">
+                            <!-- Chat orders will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="chat-main">
+                        <div class="chat-header" id="chatHeader">
+                            <div class="chat-placeholder">
+                                <i class="fas fa-comments"></i>
+                                <p>Выберите заказ для начала чата</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Chat messages will be loaded here -->
+                        </div>
+                        
+                        <div class="chat-input" id="chatInput" style="display: none;">
+                            <textarea id="adminMessageInput" placeholder="Введите ответ от лица администратора..."></textarea>
+                            <button class="btn btn-primary" onclick="sendAdminMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                                Отправить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Page -->
+            <div id="supportPage" class="crm-page">
+                <div class="page-header">
+                    <h2>Запросы поддержки</h2>
+                    <p>Обработка обращений в службу поддержки</p>
+                </div>
+                
+                <div class="support-container">
+                    <div class="support-list" id="supportList">
+                        <!-- Support requests will be loaded here -->
+                    </div>
+                    
+                    <div class="support-detail" id="supportDetail">
+                        <div class="support-detail-placeholder">
+                            <i class="fas fa-headset"></i>
+                            <p>Выберите запрос для просмотра</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Page -->
+            <div id="reviewsPage" class="crm-page">
+                <div class="page-header">
+                    <h2>Отзывы клиентов</h2>
+                    <p>Просмотр и анализ отзывов</p>
+                </div>
+                
+                <div class="reviews-overview">
+                    <div class="rating-summary">
+                        <div class="average-rating">
+                            <h3 id="overallRating">0.0</h3>
+                            <div class="stars" id="overallStars">
+                                <!-- Stars will be rendered here -->
+                            </div>
+                            <p>Средний рейтинг</p>
+                        </div>
+                        
+                        <div class="rating-breakdown" id="ratingBreakdown">
+                            <!-- Rating breakdown will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reviews-list" id="reviewsList">
+                    <!-- Reviews will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Change Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Изменить статус заказа</h3>
+                <span class="close" onclick="closeStatusModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newStatus">Новый статус:</label>
+                    <select id="newStatus">
+                        <option value="pending">Ожидает</option>
+                        <option value="processing">В обработке</option>
+                        <option value="completed">Завершен</option>
+                        <option value="cancelled">Отменен</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="statusComment">Комментарий (необязательно):</label>
+                    <textarea id="statusComment" rows="3" placeholder="Добавьте комментарий к изменению статуса..."></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeStatusModal()">Отмена</button>
+                <button class="btn btn-primary" onclick="confirmStatusChange()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Загрузка...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
