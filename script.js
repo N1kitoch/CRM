@@ -19,6 +19,11 @@ class CRMSystem {
         this.bindEvents();
         this.loadInitialData();
         this.initSSE();
+        
+        // Set initial page header if on dashboard
+        if (this.isAuthenticated) {
+            this.updatePageHeader('dashboard');
+        }
     }
     
     // Authentication
@@ -74,12 +79,13 @@ class CRMSystem {
         document.getElementById('loginPage').classList.remove('active');
         document.getElementById('crmDashboard').classList.add('active');
         this.updateUserInfo();
+        this.updatePageHeader('dashboard');
         this.loadDashboardData();
     }
     
     showPage(pageName) {
         // Hide all pages
-        document.querySelectorAll('.content-section').forEach(page => {
+        document.querySelectorAll('.crm-page').forEach(page => {
             page.classList.remove('active');
         });
         
@@ -96,6 +102,9 @@ class CRMSystem {
         if (pageName !== 'chat') {
             this.stopChatAutoRefresh();
         }
+        
+        // Update page header based on current page
+        this.updatePageHeader(pageName);
         
         // Load page data
         this.loadPageData(pageName);
@@ -139,6 +148,56 @@ class CRMSystem {
         } catch (error) {
             this.hideLoading();
             alert('Ошибка входа: ' + error.message);
+        }
+    }
+    
+    // Update page header based on current page
+    updatePageHeader(pageName) {
+        const pageHeaders = {
+            'dashboard': {
+                title: 'Дашборд',
+                subtitle: 'Обзор активности и статистики'
+            },
+            'orders': {
+                title: 'Управление заказами',
+                subtitle: 'Просмотр и изменение статусов заказов'
+            },
+            'messages': {
+                title: 'Сообщения от клиентов',
+                subtitle: 'Обработка обратной связи и запросов'
+            },
+            'chat': {
+                title: 'Чат с клиентами',
+                subtitle: 'Ответы на сообщения от лица администратора'
+            },
+            'support': {
+                title: 'Запросы поддержки',
+                subtitle: 'Обработка обращений в службу поддержки'
+            },
+            'reviews': {
+                title: 'Отзывы клиентов',
+                subtitle: 'Просмотр и анализ отзывов'
+            }
+        };
+        
+        const header = pageHeaders[pageName];
+        if (header) {
+            // Update the main header title
+            const mainHeader = document.querySelector('.crm-header h1');
+            if (mainHeader) {
+                mainHeader.innerHTML = `<i class="fas fa-chart-line"></i> ${header.title}`;
+            }
+            
+            // Update the page header if it exists
+            const pageHeader = document.querySelector(`#${pageName}Page .page-header h2`);
+            if (pageHeader) {
+                pageHeader.textContent = header.title;
+            }
+            
+            const pageSubtitle = document.querySelector(`#${pageName}Page .page-header p`);
+            if (pageSubtitle) {
+                pageSubtitle.textContent = header.subtitle;
+            }
         }
     }
     
