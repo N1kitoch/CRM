@@ -9,6 +9,8 @@ class CRMSystem {
         this.currentMessage = null;
         this.currentSupport = null;
         
+        this.secureAuth = new SecureAuth();
+        
         this.init();
     }
     
@@ -33,18 +35,24 @@ class CRMSystem {
     }
     
     async login(username, password) {
-        // В реальной системе здесь должна быть проверка через API
-        if (username === 'admin' && password === 'admin123') {
-            this.isAuthenticated = true;
-            this.currentUser = { name: username };
+        try {
+            const isValid = await this.secureAuth.validateCredentials(username, password);
             
-            localStorage.setItem('crm_token', 'demo_token_' + Date.now());
-            localStorage.setItem('crm_user', JSON.stringify(this.currentUser));
-            
-            this.showDashboard();
-            return true;
-        } else {
-            throw new Error('Неверные учетные данные');
+            if (isValid) {
+                this.isAuthenticated = true;
+                this.currentUser = { name: username };
+                
+                localStorage.setItem('crm_token', 'secure_token_' + Date.now());
+                localStorage.setItem('crm_user', JSON.stringify(this.currentUser));
+                
+                this.showDashboard();
+                return true;
+            } else {
+                throw new Error('Неверные учетные данные');
+            }
+        } catch (error) {
+            console.error('Ошибка входа:', error);
+            throw error;
         }
     }
     
@@ -83,6 +91,11 @@ class CRMSystem {
             item.classList.remove('active');
         });
         document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+        
+        // Останавливаем обновление чата если переходим на другую страницу
+        if (pageName !== 'chat') {
+            this.stopChatAutoRefresh();
+        }
         
         // Load page data
         this.loadPageData(pageName);
@@ -601,28 +614,54 @@ class CRMSystem {
         const container = document.getElementById('chatOrders');
         if (!container) return;
         
-        container.innerHTML = orders.map(order => `
+        // Сортируем заказы по приоритету статуса
+        const sortedOrders = this.sortOrdersByStatus(orders);
+        
+        container.innerHTML = sortedOrders.map(order => `
             <div class="chat-order-item" onclick="crm.selectChatOrder(${order.id})">
                 <div class="chat-order-header">
-                    <strong>📋 Заказ #${order.id}</strong>
+                    <strong><i class="fas fa-file-alt"></i>Заказ #${order.id}</strong>
                     <span class="chat-order-status ${order.status}">
                         ${this.getStatusText(order.status)}
                     </span>
                 </div>
                 <div class="chat-order-service">
-                    🎯 ${order.service_name}
+                    <i class="fas fa-at"></i>${order.service_name}
                 </div>
                 <div class="chat-order-client">
-                    👤 ${order.username || order.first_name || 'Пользователь'}
+                    <i class="fas fa-user"></i>${order.username || order.first_name || 'Пользователь'}
                 </div>
                 <div class="chat-order-message">
-                    💬 ${order.message ? (order.message.substring(0, 50) + (order.message.length > 50 ? '...' : '')) : 'Нет сообщения'}
+                    <i class="fas fa-comment"></i>${order.message ? (order.message.substring(0, 50) + (order.message.length > 50 ? '...' : '')) : 'Нет сообщения'}
                 </div>
                 <div class="chat-order-time">
-                    🕐 ${this.formatTimestamp(order.timestamp)}
+                    <i class="fas fa-clock"></i>${this.formatTimestamp(order.timestamp)}
                 </div>
             </div>
         `).join('');
+    }
+    
+    sortOrdersByStatus(orders) {
+        const statusPriority = {
+            'pending': 1,      // Ожидает - самый высокий приоритет
+            'processing': 2,   // В обработке
+            'completed': 3,    // Завершен
+            'cancelled': 4     // Отменен - самый низкий приоритет
+        };
+        
+        return orders.sort((a, b) => {
+            const priorityA = statusPriority[a.status] || 5;
+            const priorityB = statusPriority[b.status] || 5;
+            
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB;
+            }
+            
+            // Если статусы одинаковые, сортируем по времени (новые сверху)
+            const timeA = this.getSortableTimestamp(a.timestamp);
+            const timeB = this.getSortableTimestamp(b.timestamp);
+            return timeB - timeA;
+        });
     }
     
     selectChatOrder(orderId) {
@@ -640,6 +679,9 @@ class CRMSystem {
         this.currentChatOrder = orderId;
         this.loadChatMessages(orderId);
         this.showChatInput();
+        
+        // Запускаем автоматическое обновление чата
+        this.startChatAutoRefresh();
     }
     
     async loadChatMessages(orderId) {
@@ -739,18 +781,33 @@ class CRMSystem {
         const header = document.getElementById('chatHeader');
         if (!header) return;
         
-        // Get order details
-        const orders = this.getDemoChatOrders(); // In real app, get from cache or API
-        const order = orders.find(o => o.id === orderId);
+        // Находим информацию о заказе из кэша
+        const order = this.dataCache.chatOrders?.find(o => o.id == orderId);
         
         if (order) {
             header.innerHTML = `
                 <div class="chat-header-content">
-                    <h3>Чат по заказу #${order.id}</h3>
-                    <p>${order.service_name} - ${order.username || order.first_name}</p>
-                    <span class="chat-order-status ${order.status}">
-                        ${this.getStatusText(order.status)}
-                    </span>
+                    <h3>
+                        <i class="fas fa-shopping-cart"></i>
+                        Заказ #${order.id} - ${order.service_name}
+                    </h3>
+                    <p>
+                        <i class="fas fa-user"></i>
+                        Клиент: ${order.username || order.first_name || 'Пользователь'}
+                        <span class="chat-order-status ${order.status}" style="margin-left: 1rem; display: inline-block;">
+                            ${this.getStatusText(order.status)}
+                        </span>
+                    </p>
+                </div>
+            `;
+        } else {
+            header.innerHTML = `
+                <div class="chat-header-content">
+                    <h3>
+                        <i class="fas fa-comments"></i>
+                        Заказ #${orderId}
+                    </h3>
+                    <p>Чат с клиентом</p>
                 </div>
             `;
         }
@@ -1130,6 +1187,53 @@ class CRMSystem {
         }
     }
     
+    // Добавляем интервал для обновления чата в реальном времени
+    startChatAutoRefresh() {
+        if (this.chatRefreshInterval) {
+            clearInterval(this.chatRefreshInterval);
+        }
+        
+        // Обновляем чат каждые 3 секунды
+        this.chatRefreshInterval = setInterval(() => {
+            if (this.currentChatOrder && this.isAuthenticated) {
+                this.refreshChatData();
+            }
+        }, 3000);
+    }
+    
+    stopChatAutoRefresh() {
+        if (this.chatRefreshInterval) {
+            clearInterval(this.chatRefreshInterval);
+            this.chatRefreshInterval = null;
+        }
+    }
+    
+    async refreshChatData() {
+        try {
+            // Обновляем список заказов для чата
+            const chatOrders = await this.getChatOrders();
+            this.renderChatOrders(chatOrders);
+            
+            // Обновляем сообщения текущего чата
+            if (this.currentChatOrder) {
+                const messages = await this.getChatMessages(this.currentChatOrder);
+                this.renderChatMessages(messages);
+                
+                // Прокручиваем к последнему сообщению
+                this.scrollToBottom();
+            }
+        } catch (error) {
+            console.error('Ошибка при обновлении чата:', error);
+        }
+    }
+    
+    scrollToBottom() {
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+    
     handleSSEMessage(data) {
         switch (data.type) {
             case 'order_status_changed':
@@ -1362,15 +1466,63 @@ class CRMSystem {
     }
     
     // Filter Functions
-    filterOrders() {
+    async filterOrders() {
         const statusFilter = document.getElementById('statusFilter').value;
         const dateFilter = document.getElementById('dateFilter').value;
         
-        // In real app, apply filters to API call
-        console.log('Filters applied:', { status: statusFilter, date: dateFilter });
-        
-        // For demo, just reload orders
-        this.loadOrders();
+        try {
+            this.showLoading();
+            
+            // Получаем все заказы
+            const orders = await this.getOrders();
+            
+            // Применяем фильтры
+            let filteredOrders = orders;
+            
+            // Фильтр по статусу
+            if (statusFilter) {
+                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+            }
+            
+            // Фильтр по дате
+            if (dateFilter) {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                
+                filteredOrders = filteredOrders.filter(order => {
+                    const orderDate = new Date(order.timestamp);
+                    
+                    switch (dateFilter) {
+                        case 'today':
+                            return orderDate >= today;
+                        case 'week':
+                            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            return orderDate >= weekAgo;
+                        case 'month':
+                            const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+                            return orderDate >= monthAgo;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            // Обновляем таблицу
+            this.renderOrdersTable(filteredOrders);
+            
+            // Показываем количество отфильтрованных заказов
+            const totalCount = orders.length;
+            const filteredCount = filteredOrders.length;
+            
+            if (statusFilter || dateFilter) {
+                console.log(`Фильтр применен: показано ${filteredCount} из ${totalCount} заказов`);
+            }
+            
+        } catch (error) {
+            console.error('Ошибка при фильтрации заказов:', error);
+        } finally {
+            this.hideLoading();
+        }
     }
     
     // Refresh Functions
