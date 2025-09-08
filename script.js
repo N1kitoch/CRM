@@ -415,7 +415,7 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                if (data.success && Array.isArray(data.data)) {
                     return data.data;
                 }
             }
@@ -500,7 +500,9 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                console.log('📨 Messages API response:', data);
+                if (data.success && Array.isArray(data.data)) {
+                    console.log(`📨 Loaded ${data.data.length} messages from API`);
                     return data.data;
                 }
             }
@@ -509,6 +511,7 @@ class CRMSystem {
         }
         
         // Fallback to demo data
+        console.log('📨 Using demo messages data');
         return this.getDemoMessages();
     }
     
@@ -536,6 +539,8 @@ class CRMSystem {
     renderMessagesList(messages) {
         const container = document.getElementById('messagesList');
         if (!container) return;
+        
+        console.log('📨 Rendering messages list:', messages.length, 'messages');
         
         container.innerHTML = messages.map(message => `
             <div class="message-item ${message.processed ? 'processed' : 'new'}" 
@@ -634,7 +639,7 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                if (data.success && Array.isArray(data.data)) {
                     return data.data;
                 }
             }
@@ -759,7 +764,7 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                if (data.success && Array.isArray(data.data)) {
                     // Фильтруем сообщения по orderId и сортируем по времени
                     const filteredMessages = data.data.filter(msg => msg.order_id == orderId);
                     
@@ -979,7 +984,9 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                console.log('🆘 Support requests API response:', data);
+                if (data.success && Array.isArray(data.data)) {
+                    console.log(`🆘 Loaded ${data.data.length} support requests from API`);
                     return data.data;
                 }
             }
@@ -988,6 +995,7 @@ class CRMSystem {
         }
         
         // Fallback to demo data
+        console.log('🆘 Using demo support requests data');
         return this.getDemoSupportRequests();
     }
     
@@ -1019,6 +1027,8 @@ class CRMSystem {
     renderSupportList(requests) {
         const container = document.getElementById('supportList');
         if (!container) return;
+        
+        console.log('🆘 Rendering support list:', requests.length, 'requests');
         
         container.innerHTML = requests.map(request => `
             <div class="support-item ${request.processed ? 'processed' : 'new'}" 
@@ -1126,7 +1136,7 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                if (data.success && Array.isArray(data.data)) {
                     return data.data;
                 }
             }
@@ -1165,7 +1175,7 @@ class CRMSystem {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.data) {
+                if (data.success && Array.isArray(data.data)) {
                     return data.data;
                 }
             }
